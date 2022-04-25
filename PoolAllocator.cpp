@@ -8,7 +8,7 @@ PoolAllocator::PoolAllocator(std::size_t heap_memory, std::size_t chunk_size) : 
     if(this->heap_memory == 0){
         throw std :: runtime_error("Can't create empty allocator\n");
     }
-    if(chunk_size == 0){
+    if(this->chunk_size == 0){
         throw std :: runtime_error("Can't create allocator with empty chunks\n");
     }
     if(heap_memory % chunk_size != 0){ // To avoid memory fragmentation

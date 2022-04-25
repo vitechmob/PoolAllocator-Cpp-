@@ -36,16 +36,19 @@ PoolAllocator::PoolAllocator(std::size_t heap_memory, std::size_t chunk_size) : 
 void PoolAllocator :: PrintFreeChunks(){
     //Printing places of free chunks
     if(value_of_free_chunks == 0){
+        std :: cout << "There is no free chunks" << std :: endl;
         return;
     }
-    std :: cout << value_of_free_chunks << std :: endl;
-    ListNode *current = root_of_free_chunks;
-    while(current->next != nullptr){
-        std :: cout << (void*)current->free_ptr << "\t";
-        current = current->next;
+    else {
+        std :: cout << "Value of free chunks:" << value_of_free_chunks << std :: endl;
+        ListNode *current = root_of_free_chunks;
+        while (current->next != nullptr) {
+            std::cout << (void *) current->free_ptr << "\t";
+            current = current->next;
+        }
+        std::cout << (void *) current->free_ptr << "\t";
+        std::cout << "\n";
     }
-    std :: cout << (void*)current->free_ptr << "\t";
-    std :: cout << "\n";
 }
 
 PoolAllocator::~PoolAllocator() {
@@ -62,34 +65,40 @@ PoolAllocator::~PoolAllocator() {
 
 }
 void PoolAllocator :: Deallocate(void *chunk_ptr){ //Free separate chunk
-    ListNode *current = root_of_free_chunks;
-    while(current->next != nullptr){
-        current = current->next;
+    if(root_of_free_chunks != nullptr) {
+        ListNode *current = root_of_free_chunks;
+        while (current->next != nullptr) {
+            current = current->next;
+        }
+        ListNode *deallocated_chunk = new ListNode;
+        current->next = deallocated_chunk;
+        deallocated_chunk->next = nullptr;
+        deallocated_chunk->free_ptr = chunk_ptr;
+    }else{
+        root_of_free_chunks = new ListNode;
+        root_of_free_chunks->next = nullptr;
+        root_of_free_chunks->free_ptr = chunk_ptr;
     }
-    ListNode *deallocated_chunk = new ListNode;
-    current->next = deallocated_chunk;
-    deallocated_chunk->next = nullptr;
-    deallocated_chunk->free_ptr = chunk_ptr;
     value_of_free_chunks++;
 }
 void *PoolAllocator::Allocate() {
     if(value_of_free_chunks != 0) {
-        std::cout << (void *) root_of_free_chunks->free_ptr << std::endl;
-        void *returning_chunk = reinterpret_cast<void *>(root_of_free_chunks->free_ptr);
+        void *returning_chunk = reinterpret_cast<void*>(root_of_free_chunks->free_ptr);
         ListNode *temp = root_of_free_chunks;
         if (root_of_free_chunks->next != nullptr) {
             root_of_free_chunks = root_of_free_chunks->next;
         } else {
             root_of_free_chunks = nullptr;
-            value_of_free_chunks = 0;
         }
         delete temp;
         if(value_of_free_chunks != 0){
             value_of_free_chunks--;
         }
+        std :: cout << "Allocated:" << returning_chunk << std :: endl;
         return returning_chunk;
     }
     else{
+        std :: cout << "There is no free chunks,can't allocate more\n";
         return nullptr;
     }
 }
